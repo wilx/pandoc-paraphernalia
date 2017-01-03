@@ -4,3 +4,6 @@
 [submodule "templates/pandoc-moderncv"]
 	path = templates/pandoc-moderncv
 	url = https://github.com/barraq/pandoc-moderncv.git
+[submodule "templates/latex/pandoc-letter"]
+	path = templates/latex/pandoc-letter
+	url = https://github.com/aaronwolen/pandoc-letter.git
