@@ -1,4 +1,25 @@
-\documentclass[$if(fontsize)$fontsize=$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(DIV)$DIV=$DIV$,$endif$$if(BCOR)$BCOR=$BCOR$,$endif$$if(papersize)$paper=$papersize$,$endif$$if(paper)$paper=$paper$,$endif$$if(parskip)$parskip=$parskip$,$endif$$if(headings)$headings=$headings$,$endif$$if(headlines)$headlines=$headlines$,$endif$$if(headheight)$headheight=$headheight$,$endif$$if(footlines)$footlines=$footlines$,$endif$$if(footheight)$footheight=$footheight$,$endif$$if(open)$open=$open$,$endif$$if(toc)$toc=$toc$,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+$if(colorlinks)$
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+$endif$
+\PassOptionsToPackage{unicode=true}{hyperref}
+%
+\documentclass[$if(fontsize)$fontsize=$fontsize$,$endif$%
+$if(lang)$$babel-lang$,$endif$%
+$if(DIV)$DIV=$DIV$,$endif$%
+$if(BCOR)$BCOR=$BCOR$,$endif$%
+$if(papersize)$paper=$papersize$,$endif$%
+$if(paper)$paper=$paper$,$endif$%
+$if(parskip)$parskip=$parskip$,$endif$%
+$if(headings)$headings=$headings$,$endif$%
+$if(headlines)$headlines=$headlines$,$endif$%
+$if(headheight)$headheight=$headheight$,$endif$%
+$if(footlines)$footlines=$footlines$,$endif$%
+$if(footheight)$footheight=$footheight$,$endif$%
+$if(open)$open=$open$,$endif$%
+$if(toc)$toc=$toc$,$endif$%
+$for(classoption)$$classoption$$sep$,
+$endfor$]{$if(documentclass)$$documentclass$$else$scrartcl$endif$}
 $if(beamerarticle)$
 \usepackage{beamerarticle} % needs to be loaded first
 $endif$
@@ -13,7 +34,6 @@ $if(linestretch)$
 $endif$
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
   \usepackage[utf8]{inputenc}
@@ -21,46 +41,69 @@ $if(euro)$
   \usepackage{eurosym}
 $endif$
 \else % if luatex or xelatex
+$if(mathspec)$
   \ifxetex
     \usepackage{mathspec}
   \else
-    \usepackage{fontspec}
+    \usepackage{unicode-math}
   \fi
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
-$for(fontfamilies)$
-  \newfontfamily{$fontfamilies.name$}[$fontfamilies.options$]{$fontfamilies.font$}
-$endfor$
-$if(euro)$
-  \newcommand{\euro}{€}
+$else$
+  \usepackage{unicode-math}
 $endif$
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 $if(mainfont)$
-    \setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  \setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
 $endif$
 $if(sansfont)$
-    \setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$]{$sansfont$}
+  \setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$]{$sansfont$}
 $endif$
 $if(monofont)$
-    \setmonofont[Mapping=tex-ansi$if(monofontoptions)$,$for(monofontoptions)$$monofontoptions$$sep$,$endfor$$endif$]{$monofont$}
+  \setmonofont[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$]{$monofont$}
 $endif$
+$for(fontfamilies)$
+  \newfontfamily{$fontfamilies.name$}[$for(fontfamilies.options)$$fontfamilies.options$$sep$,$endfor$]{$fontfamilies.font$}
+$endfor$
 $if(mathfont)$
+$if(mathspec)$
+  \ifxetex
     \setmathfont(Digits,Latin,Greek)[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+  \else
+    \setmathfont[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+  \fi
+$else$
+  \setmathfont[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+$endif$
 $endif$
 $if(CJKmainfont)$
+  \ifxetex
     \usepackage{xeCJK}
     \setCJKmainfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmainfont$}
+  \fi
+$endif$
+$if(luatexjapresetoptions)$
+  \ifluatex
+    \usepackage[$for(luatexjapresetoptions)$$luatexjapresetoptions$$sep$,$endfor$]{luatexja-preset}
+  \fi
+$endif$
+$if(CJKmainfont)$
+  \ifluatex
+    \usepackage[$for(luatexjafontspecoptions)$$luatexjafontspecoptions$$sep$,$endfor$]{luatexja-fontspec}
+    \setmainjfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmainfont$}
+  \fi
 $endif$
 \fi
 % use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 % use microtype if available
+\ifluatex\usepackage{luatexbase}\fi % This is a fix to issue that affected some version of Microtype.
 \IfFileExists{microtype.sty}{%
-\usepackage{microtype}
+\usepackage[$for(microtypeoptions)$$microtypeoptions$$sep$,$endfor$]{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\PassOptionsToPackage{backref}{hyperref}
 \usepackage{bookmark}
-$if(colorlinks)$
-\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
 $endif$
 \hypersetup{unicode=true,
 $if(title-meta)$
@@ -70,7 +113,7 @@ $if(author-meta)$
             pdfauthor={$author-meta$},
 $endif$
 $if(keywords)$
-            pdfkeywords={$for(keywords)$$keywords$$sep$; $endfor$},
+            pdfkeywords={$for(keywords)$$keywords$$sep$, $endfor$},
 $endif$
 $if(colorlinks)$
             colorlinks=true,
@@ -82,6 +125,9 @@ $else$
 $endif$
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
 $if(lang)$
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[shorthands=off,$for(babel-otherlangs)$$babel-otherlangs$,$endfor$main=$babel-lang$]{babel}
@@ -96,16 +142,6 @@ $for(polyglossia-otherlangs)$
 $endfor$
 \fi
 $endif$
-$if(natbib)$
-\usepackage{natbib}
-\bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
-$endif$
-$if(biblatex)$
-\usepackage[$if(biblio-style)$style=$biblio-style$,$endif$$for(biblatexoptions)$$biblatexoptions$$sep$,$endfor$]{biblatex}
-$for(bibliography)$
-\addbibresource{$bibliography$}
-$endfor$
-$endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
 $endif$
@@ -115,16 +151,15 @@ $if(geometry)$
 $endif$
 $if(listings)$
 \usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
 $endif$
 $if(lhs)$
 \lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
 $endif$
 $if(highlighting-macros)$
 $highlighting-macros$
-$endif$
-$if(verbatim-in-note)$
-\usepackage{fancyvrb}
-\VerbatimFootnotes % allows verbatim text in footnotes
 $endif$
 $if(tables)$
 \usepackage{longtable,booktabs}
@@ -133,6 +168,9 @@ $if(tables)$
 $endif$
 $if(graphics)$
 \usepackage{graphicx,grffile}
+\makeatletter
+\let\quote@name\unquote@name
+\makeatother
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -144,7 +182,7 @@ $if(graphics)$
 $endif$
 $if(links-as-notes)$
 % Make links footnotes instead of hotlinks:
-\renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
 $endif$
 $if(strikeout)$
 \usepackage[normalem]{ulem}
@@ -157,19 +195,21 @@ $endif$
 $if(numbersections)$
 \setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$5$endif$}
 $else$
-\setcounter{secnumdepth}{0}
+\setcounter{secnumdepth}{-\maxdimen}
 $endif$
-$if(subparagraph)$
+$if(beamer)$
 $else$
-% Redefines (sub)paragraphs to behave more like sections
+$if(block-headings)$
+% Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+$endif$
 $endif$
 $if(dir)$
 \ifxetex
@@ -197,6 +237,43 @@ $endif$
 $for(header-includes)$
 $header-includes$
 $endfor$
+
+$if(natbib)$
+\usepackage{natbib}
+\bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
+$endif$
+$if(biblatex)$
+\usepackage[$if(biblio-style)$style=$biblio-style$,$endif$$for(biblatexoptions)$$biblatexoptions$$sep$,$endfor$]{biblatex}
+$for(bibliography)$
+\addbibresource{$bibliography$}
+$endfor$
+\usepackage{xurl}
+$endif$
+$if(csl-refs)$
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+$endif$
 
 $if(subject)$
 \subject{$subject$}
